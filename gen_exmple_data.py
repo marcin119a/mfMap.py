@@ -61,9 +61,9 @@ def gen_data():
     
     # Zapisywanie plików (tab-separated)
     # W R użyto row.names=T i col.names=T, co jest domyślne w pandas
-    features_v1.to_csv('data/COADREAD/features_exp.txt', sep='\t')
-    features_v1.to_csv('data/COADREAD/features_mut_cnv_comb.txt', sep='\t')
-    labels.to_csv('data/COADREAD/dataset_labels.txt', sep='\t')
+    features_v1.to_csv(f'{basedir}/COADREAD/features_exp.txt', sep='\t')
+    features_v1.to_csv(f'{basedir}/COADREAD/features_mut_cnv_comb.txt', sep='\t')
+    labels.to_csv(f'{basedir}/COADREAD/dataset_labels.txt', sep='\t')
 
 # Uruchomienie funkcji
 gen_data()
