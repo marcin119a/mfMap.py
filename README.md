@@ -25,6 +25,13 @@ Clone this repository to use MFmap
 git clone https://github.com/mcmzxx/mfMap.py.git
 cd mfMap.py
 
+# (recommended) create and activate virtual environment
+python3 -m venv .venv
+source .venv/bin/activate
+
+# install Python dependencies
+pip install -r requirements.txt
+
 # run the example using simulated data
 bash run-example.sh
 
@@ -34,6 +41,12 @@ cd data_bak
 # download the data from data repository (https://cloud.hs-koblenz.de/s/WFWjMq9pJ8i29WD)
 cd ..
 bash run_example_real_data.sh
+
+# generate fake example data in ./data_fake
+python gen_exmple_data.py
+
+# download realistic RNA/mutation data from Kaggle and save in ./data
+bash download_data.sh
 ```
 
 ### Input Data

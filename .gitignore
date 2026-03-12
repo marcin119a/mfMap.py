@@ -1,0 +1,22 @@
+# Python bytecode / cache
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual environments
+.venv/
+venv/
+
+# Data and results (generated)
+data/
+data_bak/
+data_fake/
+logs/
+results/
+ssd/
+table/
+
+# OS / editor files
+.DS_Store
+*.swp
+*.swo

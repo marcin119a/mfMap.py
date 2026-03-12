@@ -19,8 +19,12 @@ from earlystoping import Earlystopping
 from sklearn import metrics
 import tensorflow.compat.v1 as tf
 import os
+from pathlib import Path
 from lr_scheduler import ReduceLROnPlateau
-os.chdir('/storage/zhang/mfMap.py')
+
+# Pracujemy w katalogu, w którym leży ten plik, zamiast w ścieżce z klastra autora
+PROJECT_ROOT = Path(__file__).resolve().parent
+os.chdir(PROJECT_ROOT)
 import re
 
 tf.app.flags.DEFINE_string('f', '', 'kernel')
@@ -42,7 +46,7 @@ flags.DEFINE_integer('level_3_dim_expr', 512, 'Number of dimensions in level 3.'
 flags.DEFINE_integer('level_4_dim', 256, 'Number of dimensions in level 4.')
 flags.DEFINE_integer('classifier_1_dim', 128, 'Number of dimensions in classifier level 1.')
 flags.DEFINE_integer('classifier_2_dim', 64, 'Number of dimensions in classifier level 2.')
-flags.DEFINE_string('input_path', 'data',
+flags.DEFINE_string('input_path', 'data_fake',
                     'Data location of input.')
 flags.DEFINE_string('organ', 'BRCA','organ')
 flags.DEFINE_string('input1_fn', 'features_exp.txt', 'feature file name')
@@ -64,6 +68,9 @@ def prepare_input_tum_cell(data_location,label_fn,input1_fn,input2_fn):
     expr_df_bak= pd.read_table(fn, index_col=0)
     fn=os.path.join(data_location,label_fn)
     label_bak= pd.read_table(fn, index_col=None)
+    # Upewnij się, że indeksem są barcody (spójne z plikami generowanymi w Pythonie)
+    if 'barcode' in label_bak.columns:
+        label_bak.index = label_bak['barcode']
     cnv_df_bak=cnv_df_bak.clip(1e-3,0.999)
     expr_df_bak=expr_df_bak.clip(1e-3,0.99)
     ddsels=label_bak.barcode[[(label_bak['subtype'][x]=='NOLBL') and (label_bak['type'][x]=='tumor') for x in label_bak.index]].tolist()
@@ -153,10 +160,10 @@ class MultiOmiDataset():
 
     def __getitem__(self, index):
         omics_data=[]
-        cnv_line=self.cnv_df.iloc[:, index].values
+        cnv_line=self.cnv_df.iloc[:, index].values.copy()
         cnv_line_tensor=torch.Tensor(cnv_line)
         omics_data.append(cnv_line_tensor)
-        expr_line=self.expr_df.iloc[:, index].values
+        expr_line=self.expr_df.iloc[:, index].values.copy()
         expr_line_tensor=torch.Tensor(expr_line)
         omics_data.append(expr_line_tensor)       
         label=self.labels[index]
@@ -330,6 +337,9 @@ def run_train():
     input_path_name =re.sub(".txt", "", input_path_name)
     input_path_name='2v_hb_{}'.format(input_path_name)
     out_path_name='results/{}/'.format(FLAGS.organ)
+    # ensure output directories exist
+    os.makedirs(os.path.dirname(out_path_name), exist_ok=True)
+    os.makedirs(os.path.join('ssd', FLAGS.organ), exist_ok=True)
     if FLAGS.parallel:
         mfMAP_model=mfMAP(input_dim_cnv,input_dim_expr,classifier_out_dim) 
     else:
@@ -356,7 +366,7 @@ def run_train():
         for batch_index, sample in enumerate(train_loader):
             data=sample[0]
             y=sample[1]
-            y=torch.tensor(y)
+            y=y.detach().clone()
             for i in range(2):
                 data[i]=data[i].to(device)
             y=y.to(device)
