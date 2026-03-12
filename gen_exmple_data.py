@@ -6,7 +6,7 @@ from scipy.stats import norm
 
 # Odpowiednik rm(list = ls()) nie jest bezpośrednio potrzebny w Pythonie, 
 # ale definiujemy bazową ścieżkę
-basedir = 'mfMap.py'
+basedir = 'data_fake'
 os.chdir(basedir)
 
 oo = ["data", "logs", "results", "ssd", "table"]
