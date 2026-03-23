@@ -24,9 +24,9 @@ Output:
 
 Example (using bundled COAD data):
   python propagate_profile.py \\
-      data/COADREAD/features_mut_list.txt \\
+      data/ALL/features_mut_list.txt \\
       data/HumanNet90_Symbol.txt \\
-      --fmt list -o data/COADREAD/features_mut_propagated.tsv -v
+      --fmt list -o data/ALL/features_mut_propagated.tsv -v
 """
 
 import argparse
